@@ -52,8 +52,16 @@ defmodule ExPression.Interpreter do
     end
   end
 
-  defp do_eval({:var, [name]}, context) do
-    case context.bindings do
+  defp do_eval({:var, [name]}, %{bindings: bindings_fn}) when is_function(bindings_fn) do
+    with {:ok, value} <- bindings_fn.(name) do
+      value
+    else
+      _other -> {:error, {:var_not_bound, name}}
+    end
+  end
+
+  defp do_eval({:var, [name]}, %{bindings: bindings}) when is_map(bindings) do
+    case bindings do
       %{^name => value} -> value
       _other -> {:error, {:var_not_bound, name}}
     end
