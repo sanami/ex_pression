@@ -59,8 +59,9 @@ defmodule ExPression do
   def eval_ast(ast, opts \\ []) do
     bindings = Keyword.get(opts, :bindings, %{})
     functions_module = Keyword.get(opts, :functions_module)
+    interpreter_module = Keyword.get(opts, :interpreter_module)
 
-    case Interpreter.eval(ast, bindings, functions_module) do
+    case (interpreter_module || Interpreter).eval(ast, bindings, functions_module) do
       {:ok, res} ->
         {:ok, res}
 
